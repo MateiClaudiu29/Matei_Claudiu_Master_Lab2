@@ -34,6 +34,7 @@ namespace Matei_Claudiu_Lab2.Controllers
             }
 
             var book = await _context.Books
+                .Include(b=>b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {
@@ -46,6 +47,11 @@ namespace Matei_Claudiu_Lab2.Controllers
         // GET: Books/Create
         public IActionResult Create()
         {
+            DbSet<Author> authors = _context.Authors;
+
+            var authorsQuery = from author in authors
+                               select new { ID = author.ID, FullName=author.FirstName+" "+author.LastName};
+            ViewData["AuhorID"] = new SelectList(authorsQuery, "ID", "FullName");
             return View();
         }
 
@@ -54,7 +60,7 @@ namespace Matei_Claudiu_Lab2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Auhor,Price")] Book book)
+        public async Task<IActionResult> Create([Bind("Id,Title,AuhorID,Price")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -62,6 +68,7 @@ namespace Matei_Claudiu_Lab2.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["AuhorID"] = new SelectList(_context.Authors, "ID", "ID", book.AuhorID);
             return View(book);
         }
 
@@ -78,6 +85,12 @@ namespace Matei_Claudiu_Lab2.Controllers
             {
                 return NotFound();
             }
+
+            DbSet<Author> authors= _context.Authors;
+            var authorsQuery = from author in authors
+                               select new { ID = author.ID, FullName = author.FirstName + " " + author.LastName };
+            ViewData["AuhorID"] = new SelectList(authorsQuery, "ID", "FullName");
+
             return View(book);
         }
 
@@ -86,7 +99,7 @@ namespace Matei_Claudiu_Lab2.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Auhor,Price")] Book book)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,AuhorID,Price")] Book book)
         {
             if (id != book.Id)
             {
@@ -113,6 +126,11 @@ namespace Matei_Claudiu_Lab2.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            DbSet<Author> authors = _context.Authors;
+            var authorsQuery = from author in authors
+                               select new { ID = author.ID, FullName = author.FirstName + " " + author.LastName };
+            ViewData["AuhorID"] = new SelectList(authorsQuery, "ID", "FullName");
+
             return View(book);
         }
 
@@ -125,6 +143,7 @@ namespace Matei_Claudiu_Lab2.Controllers
             }
 
             var book = await _context.Books
+                .Include(b=>b.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (book == null)
             {

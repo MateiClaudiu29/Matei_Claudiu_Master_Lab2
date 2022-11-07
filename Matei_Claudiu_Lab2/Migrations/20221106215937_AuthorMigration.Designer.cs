@@ -4,6 +4,7 @@ using Matei_Claudiu_Lab2.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Matei_Claudiu_Lab2.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    partial class LibraryContextModelSnapshot : ModelSnapshot
+    [Migration("20221106215937_AuthorMigration")]
+    partial class AuthorMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -24,11 +26,11 @@ namespace Matei_Claudiu_Lab2.Migrations
 
             modelBuilder.Entity("Matei_Claudiu_Lab2.Models.Author", b =>
                 {
-                    b.Property<int?>("ID")
+                    b.Property<int>("ID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("ID"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"), 1L, 1);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -51,16 +53,17 @@ namespace Matei_Claudiu_Lab2.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("AuhorID")
+                    b.Property<int>("AuhorID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("AuthorID")
+                    b.Property<int>("AuthorID")
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -121,7 +124,9 @@ namespace Matei_Claudiu_Lab2.Migrations
                 {
                     b.HasOne("Matei_Claudiu_Lab2.Models.Author", "Author")
                         .WithMany("Books")
-                        .HasForeignKey("AuthorID");
+                        .HasForeignKey("AuthorID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });
